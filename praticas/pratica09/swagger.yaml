@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: API de Produtos - Prática 09
+  description: API REST para gerenciamento de produtos.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Ambiente de desenvolvimento
+tags:
+  - name: produtos
+    description: Operações relacionadas a produtos.
+paths:
+  /produtos:
+    get:
+      tags:
+        - produtos
+      summary: Lista todos os produtos
+      description: Retorna uma lista de todos os produtos cadastrados.
+      responses:
+        '200':
+          description: Uma lista de produtos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfProdutos'
+    post:
+      tags:
+        - produtos
+      summary: Cria um novo produto
+      description: Adiciona um novo produto ao sistema.
+      requestBody:
+        description: Um JSON com dados do novo produto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Produto'
+      responses:
+        '201':
+          description: Produto criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+        '422':
+          description: Nome e preço são obrigatórios
+  /produtos/{produtoId}:
+    parameters:
+      - in: path
+        name: produtoId
+        required: true
+        description: Id do produto a ser buscado
+        schema:
+          type: integer
+    get:
+      tags:
+        - produtos
+      summary: Retorna um produto específico
+      description: Retorna os detalhes de um produto usando o seu ID.
+      responses:
+        '200':
+          description: Um JSON com os dados do produto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+        '404':
+          description: Produto não encontrado
+    put:
+      tags:
+        - produtos
+      summary: Atualiza um produto específico
+      description: Altera as informações de um produto existente.
+      requestBody:
+        description: Um JSON com dados do produto a atualizar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Produto'
+      responses:
+        '200':
+          description: Um JSON com os dados do produto atualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+        '404':
+          description: Produto não encontrado
+        '422':
+          description: Nome e preço são obrigatórios
+    delete:
+      tags:
+        - produtos
+      summary: Exclui um produto específico
+      description: Remove um produto do sistema usando o seu ID.
+      responses:
+        '204':
+          description: Produto removido com sucesso
+        '404':
+          description: Produto não encontrado
+components:
+  schemas:
+    ArrayOfProdutos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Produto'
+    Produto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único do produto.
+        nome:
+          type: string
+          description: Nome do produto.
+        preco:
+          type: number
+          description: Preço do produto.
