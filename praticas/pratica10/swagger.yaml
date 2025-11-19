@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  title: API Prática 10
+  version: 1.0.0
+  description: Documentação da API da prática 10
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+
+  /:
+    get:
+      tags:
+        - geral
+      summary: Verificar se a API está ativa
+      responses:
+        '200':
+          description: API funcionando
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+
+  /usuarios:
+    post:
+      tags:
+        - usuarios
+      summary: Criar um novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+      responses:
+        '201':
+          description: Usuário criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Erro ao criar usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+
+    delete:
+      tags:
+        - usuarios
+      summary: Remover usuário pelo email
+      security:
+        - JWTAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usuario
+              properties:
+                usuario:
+                  type: string
+      responses:
+        '204':
+          description: Usuário removido com sucesso (sem conteúdo)
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+
+  /usuarios/login:
+    post:
+      tags:
+        - usuarios
+      summary: Efetuar login do usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usuario
+                - senha
+              properties:
+                usuario:
+                  type: string
+                senha:
+                  type: string
+      responses:
+        '200':
+          description: Login bem-sucedido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+
+  /usuarios/renovar:
+    post:
+      tags:
+        - usuarios
+      summary: Renovar token do usuário autenticado
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          description: Token renovado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+
+components:
+
+  securitySchemes:
+    JWTAuth:
+      type: apiKey
+      in: header
+      name: authorization
+
+  schemas:
+
+    Usuario:
+      type: object
+      required:
+        - nome
+        - email
+        - senha
+      properties:
+        nome:
+          type: string
+        email:
+          type: string
+        senha:
+          type: string
+
+    Mensagem:
+      type: object
+      properties:
+        msg:
+          type: string
